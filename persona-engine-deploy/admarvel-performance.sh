@@ -51,12 +51,12 @@ do
 	diff home_personify_admarveltest.$i.csv ../baseline/home_personify_admarveltest.$i.csv > home_personify_admarveltest.$i.csv.diff
  
 	if [ ! -s home_personify_admarveltest.$i.csv.diff ]; then 
-		MAIL_TITLE='HOME PERSONIFY '$i' PASSED\!'
-		echo $MAIL_TITLE | cat admarveltest_personification_$i.out | mail -s '$MAIL_TITLE' tatchison@skyhookwireless.com
+		MAIL_TITLE='HOME PERSONIFY '$i' PASSED!'
+		echo $MAIL_TITLE | cat admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" tatchison@skyhookwireless.com
 		rm home_personify_admarveltest.$i.csv.diff home_personify_admarveltest.$i.csv admarveltest_personification_$i.out;
 	else 
-		MAIL_TITLE='HOME PERSONIFY '$i' FAILED\!'
-		echo $MAIL_TITLE | cat home_personify_admarveltest.$i.csv.diff admarveltest_personification_$i.out | mail -s '$MAIL_TITLE' tatchison@skyhookwireless.com
+		MAIL_TITLE='HOME PERSONIFY '$i' FAILED!'
+		echo $MAIL_TITLE | cat home_personify_admarveltest.$i.csv.diff admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" tatchison@skyhookwireless.com
 		exit 1;
 	fi
 
