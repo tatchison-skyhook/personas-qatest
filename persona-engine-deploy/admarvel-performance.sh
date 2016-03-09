@@ -11,19 +11,23 @@ scriptdir="`dirname $script`"
 cd $scriptdir || exit 1
  
 # Clean up the data from the previous test
-hadoop fs -rm -f -r /user/personas/data/admarveltest/userlocationlog/*
-hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/user_campaigns
-hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/vbind/*
-hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/cbind/*
-hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/_SUCCESS
-hadoop fs -rm -f -r /user/personas/data/admarveltest/logs/backup/*
+# hadoop fs -rm -f -r /user/personas/data/admarveltest/userlocationlog/*
+# hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/user_campaigns
+# hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/vbind/*
+# hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/cbind/*
+# hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/_SUCCESS
+# hadoop fs -rm -f -r /user/personas/data/admarveltest/logs/backup/*
+aws s3 rm s3://personas-dev/customer/admarveltest/bind/cbind/ --recursive --exclude '*' --include '*.bz2' --include '*SUCCESS'
+aws s3 rm s3://personas-dev/customer/admarveltest/bind/vbind/ --recursive --exclude '*' --include '*.bz2' --include '*SUCCESS'
+aws s3 rm s3://personas-dev/customer/admarveltest/userlocationlog/ --recursive --exclude '*' --include '*.bz2' --include '*SUCCESS'
+ 
  
 # Truncate the database tables
 hive -e "use admarveltest; truncate table location_quarantine;"
 hive -e "use admarveltest; truncate table personas_version;"
 hive -e "use admarveltest; truncate table user_behaviors_internal;"
 hive -e "use admarveltest; truncate table user_home_census;"
-hive -e "use admarveltest; truncate table user_location_log;"
+# hive -e "use admarveltest; truncate table user_location_log;"
 
 # Set the start and end dates.
 STARTDATE="20151201"
@@ -45,21 +49,21 @@ do
 
 	echo $i
     	echo HOME/PERSONIFY START DATE FOR $i `date`
-	nohup python ./home_personify.py --cfg-file=admarvel_personify.properties --bind-date=$i > admarveltest_personification_$i.out 2>&1
-	hive -e "use admarveltest; select behavior_id, COUNT(behavior_id) mycount from user_behaviors_internal group by behavior_id order by behavior_id;" > home_personify_admarveltest.$i.csv
+	nohup python ./home_personify.py --cfg-file=admarveltest_personify.automation.properties --bind-date=$i > admarveltest_personification_$i.out 2>&1
+	hive -e "use admarveltest; select behavior_id, COUNT(behavior_id) mycount from user_behaviors_internal group by behavior_id order by behavior_id;" > home_personify_admarveltest_performance.$i.csv
     	echo HOME/PERSONIFY END DATE FOR $i `date`
-	diff home_personify_admarveltest.$i.csv ../baseline/home_personify_admarveltest.$i.csv > home_personify_admarveltest.$i.csv.diff
+	diff home_personify_admarveltest_performance.$i.csv ../baseline/home_personify_admarveltest_performance.$i.csv > home_personify_admarveltest_performance.$i.csv.diff
  
-	if [ ! -s home_personify_admarveltest.$i.csv.diff ]; then 
+	if [ ! -s home_personify_admarveltest_performance.$i.csv.diff ]; then 
 		MAIL_TITLE='HOME PERSONIFY '$i' PASSED!'
 		echo $MAIL_TITLE | cat admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" tatchison@skyhookwireless.com
-		rm home_personify_admarveltest.$i.csv.diff home_personify_admarveltest.$i.csv admarveltest_personification_$i.out;
+		# rm home_personify_admarveltest.$i.csv.diff home_personify_admarveltest.$i.csv admarveltest_personification_$i.out;
 	else 
 		MAIL_TITLE='HOME PERSONIFY '$i' FAILED!'
-		echo $MAIL_TITLE | cat home_personify_admarveltest.$i.csv.diff admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" tatchison@skyhookwireless.com
-		exit 1;
+		echo $MAIL_TITLE | cat home_personify_admarveltest_performance.$i.csv.diff admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" tatchison@skyhookwireless.com
+		# exit 1;
 	fi
+done
 
 cd ..
 
-done
