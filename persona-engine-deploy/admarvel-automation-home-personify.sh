@@ -17,29 +17,29 @@ cd $scriptdir || exit 1
 # hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/cbind/*
 # hadoop fs -rm -f -r /user/personas/data/admarveltest/bind/_SUCCESS
 # hadoop fs -rm -f -r /user/personas/data/admarveltest/logs/backup/*
-aws s3 rm s3://personas-dev/customer/admarveltest/bind/cbind/ --recursive --exclude '*' --include '*.lz4' --include '*SUCCESS' --include '*.bz2'
-aws s3 rm s3://personas-dev/customer/admarveltest/bind/vbind/ --recursive --exclude '*' --include '*.lz4' --include '*SUCCESS' --include '*.bz2'
-aws s3 rm s3://personas-dev/customer/admarveltest/userlocationlog/ --recursive --exclude '*' --include '*.lz4' --include '*SUCCESS' --include '*.bz2'
+# aws s3 rm s3://personas-dev/customer/admarveltest/userlocationlog/* --recursive
+# aws s3 rm s3://personas-dev/customer/admarveltest/bind/vbind/* --recursive
+# aws s3 rm s3://personas-dev/customer/admarveltest/bind/cbind/* --recursive
  
 # Truncate the database tables
-hive -e "use admarveltest; truncate table location_quarantine;"
-hive -e "use admarveltest; truncate table personas_version;"
-hive -e "use admarveltest; truncate table user_behaviors_internal;"
-hive -e "use admarveltest; truncate table user_home_census;"
+# hive -e "use admarveltest; truncate table location_quarantine;"
+# hive -e "use admarveltest; truncate table personas_version;"
+# hive -e "use admarveltest; truncate table user_behaviors_internal;"
+# hive -e "use admarveltest; truncate table user_home_census;"
 # hive -e "use admarveltest; truncate table user_location_log;"
 
 # Set the start and end dates.
-STARTDATE="20150721"
-ENDDATE="20151231"
+# STARTDATE="20150721"
+# ENDDATE="20151231"
 
-if [ -e admarveltest-automation.out.`date +'%Y%m%d'` ]; then
-    echo Error: admarveltest-automation.out.`date +'%Y%m%d'` exists, automation has been run today, exiting
-    exit 1
-else
-    echo PARSE/BIND START DATE `date`
-    nohup python ./workflow/persona-runner.py --cfg-file ./workflow/admarveltest-runner.automation.cfg --start-date $STARTDATE --end-date $ENDDATE --log-level=DEBUG > admarveltest-automation.out.`date +'%Y%m%d'` 2>&1
-    echo PARSE/BIND END DATE `date`
-fi
+# if [ -e admarveltest-automation.out.`date +'%Y%m%d'` ]; then
+#     echo Error: admarveltest-automation.out.`date +'%Y%m%d'` exists, automation has been run today, exiting
+#     exit 1
+# else
+#     echo PARSE/BIND START DATE `date`
+#     nohup python ./workflow/persona-runner.py --cfg-file ./workflow/admarveltest-runner.automation.cfg --start-date $STARTDATE --end-date $ENDDATE --log-level=DEBUG > admarveltest-automation.out.`date +'%Y%m%d'` 2>&1
+#     echo PARSE/BIND END DATE `date`
+# fi
 
 cd homing
 
