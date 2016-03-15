@@ -50,7 +50,7 @@ do
 	echo $basename - $i
     	echo $basename - HOME/PERSONIFY START DATE `date`
 	# nohup ./home_personify_acceleratortestlz4 -d $i -c acceleratortestlz4 -s /var/lib/hadoop-hdfs/deploy/persona-engine-qa > home_personify_acceleratortestlz4$i.out 2>&1
-	nohup ./home_personify.py --cfg-file=accelerator_personify.properties --bind-date=$i > acceleratortestlz4.$i.log &
+	nohup ./home_personify.py --cfg-file=acceleratortestlz4_personify.properties --bind-date=$i > acceleratortestlz4.$i.log &
     	echo $basename - HOME/PERSONIFY END DATE `date`
 	hive -e "use acceleratortestlz4; select behavior_id, COUNT(behavior_id) mycount from user_behaviors group by behavior_id order by behavior_id;" > home_personify_acceleratortestlz4.$i.csv
 	diff home_personify_acceleratortestlz4.$i.csv baseline/home_personify_acceleratortestlz4.$i.csv > home_personify_acceleratortestlz4.$i.csv.diff
