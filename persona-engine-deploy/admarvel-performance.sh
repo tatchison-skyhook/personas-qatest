@@ -7,6 +7,7 @@
 # Extract relative location of admarvel scripts
 script="`readlink --canonicalize $0`"
 scriptdir="`dirname $script`"
+basename="`basename $script`"
 
 cd $scriptdir || exit 1
  
@@ -33,12 +34,12 @@ STARTDATE="20151201"
 ENDDATE="20151231"
 
 if [ -e admarveltest-performance.out.`date +'%Y%m%d'` ]; then
-    echo Error: admarveltest-performance.out.`date +'%Y%m%d'` exists, performance has been run today, exiting
+    echo $basename - Error: admarveltest-performance.out.`date +'%Y%m%d'` exists, performance has been run today, exiting
     exit 1
 else
-    echo PARSE/BIND START DATE `date`
+    echo $basename - PARSE/BIND START DATE `date`
     nohup python ./workflow/persona-runner.py --cfg-file ./workflow/admarveltest-runner.automation.cfg --start-date $STARTDATE --end-date $ENDDATE --log-level=DEBUG > admarveltest-performance.out.`date +'%Y%m%d'` 2>&1
-    echo PARSE/BIND END DATE `date`
+    echo $basename - PARSE/BIND END DATE `date`
 fi
 
 cd homing
@@ -46,20 +47,20 @@ cd homing
 for i in 2015-12-30 
 do
 
-	echo $i
-    	echo HOME/PERSONIFY START DATE FOR $i `date`
+	echo $basename - $i
+    	echo $basename - HOME/PERSONIFY START DATE FOR $i `date`
 	nohup python ./home_personify.py --cfg-file=admarveltest_personify.automation.properties --bind-date=$i > admarveltest_personification_$i.out 2>&1
 	hive -e "use admarveltest; select behavior_id, COUNT(behavior_id) mycount from user_behaviors_internal group by behavior_id order by behavior_id;" > home_personify_admarveltest_performance.$i.csv
-    	echo HOME/PERSONIFY END DATE FOR $i `date`
+    	echo $basename - HOME/PERSONIFY END DATE FOR $i `date`
 	diff home_personify_admarveltest_performance.$i.csv ../baseline/home_personify_admarveltest_performance.$i.csv > home_personify_admarveltest_performance.$i.csv.diff
  
 	if [ ! -s home_personify_admarveltest_performance.$i.csv.diff ]; then 
-		MAIL_TITLE='HOME PERSONIFY '$i' PASSED!'
-		echo $MAIL_TITLE | cat admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
+		MAIL_TITLE='ADMARVEL AUTOMATION TEST HOME PERSONIFY '$i' PASSED!'
+		echo $basename - $MAIL_TITLE | cat admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
 		# rm home_personify_admarveltest.$i.csv.diff home_personify_admarveltest.$i.csv admarveltest_personification_$i.out;
 	else 
-		MAIL_TITLE='HOME PERSONIFY '$i' FAILED!'
-		echo $MAIL_TITLE | cat home_personify_admarveltest_performance.$i.csv.diff admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
+		MAIL_TITLE='ADMARVEL AUTOMATION TEST HOME PERSONIFY '$i' FAILED!'
+		echo $basename - $MAIL_TITLE | cat home_personify_admarveltest_performance.$i.csv.diff admarveltest_personification_$i.out | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
 		# exit 1;
 	fi
 done
