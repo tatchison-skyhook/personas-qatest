@@ -56,11 +56,11 @@ do
  
 	if [ ! -s home_personify_acceleratortest.$i.csv.diff ]; then 
 		MAIL_TITLE='ACCELERATOR AUTOMATION TEST HOME PERSONIFY '$i' PASSED!'
-		echo $basename - $MAIL_TITLE | cat acceleratortest_personification_$i.log | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
+		echo $basename" - "$MAIL_TITLE | cat acceleratortest_personification_$i.log | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
 		# rm home_personify_acceleratortest.$i.csv.diff home_personify_acceleratortest.$i.csv home_personify_acceleratortest.$i.out;
 	else 
 		MAIL_TITLE='ACCELERATOR AUTOMATION TEST HOME PERSONIFY '$i' FAILED!'
-		echo $basename - $MAIL_TITLE | cat home_personify_acceleratortest.$i.csv.diff acceleratortest_personification_$i.log | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
+		echo $basename" - "$MAIL_TITLE | cat home_personify_acceleratortest.$i.csv.diff acceleratortest_personification_$i.log | mail -s "$MAIL_TITLE" personas@skyhookwireless.com
 		# exit 1;
 	fi
 done
